@@ -43,7 +43,7 @@ Values above 0.5 are intended to represent instrumental tracks, but confidence i
 Unit circle divided into 12
 
 ## Liveness
-Value between 0.0 nd 1.0
+Value between 0.0 and 1.0
 
 A value above 0.8 provides strong likelihood that the track is live.
 
@@ -67,7 +67,7 @@ Values below 0.33 most likely represent music and other non-speech-like tracks.
 in beats per minute (BPM)
 
 ## Time signature
-Value between 0.0 and 1.0
+0.0, 0.25, 0.75, 1.0, 1.25
 
 [0/4, 1/4, 3/4, 4/4, 5/4]
 
