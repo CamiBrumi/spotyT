@@ -42,6 +42,19 @@ Values above 0.5 are intended to represent instrumental tracks, but confidence i
 ## Key
 Unit circle divided into 12
 
+C Major = A Minor = (1,0)
+C# Major = A# Minor = (sqrt(3)/2, 1/2)
+D Major = B Minor = (1/2, sqrt(3)/2)
+D# Major = C Minor = (0,1)
+E Major = C# Minor = (-1/2, sqrt(3)/2)
+F Major = D Minor = (-sqrt(3)/2), 1/2)
+F# Major = D# Minor = (-1,0)
+G Major = E Minor = (-sqrt(3)/2), -1/2)
+G# Major = F Minor = (-1/2, -sqrt(3)/2)
+A Major = F# Minor = (0,-1)
+A# Major = G Minor = (1/2, -sqrt(3)/2)
+B Major = G# Minor = (sqrt(3)/2), -1/2)
+
 ## Liveness
 Value between 0.0 and 1.0
 
