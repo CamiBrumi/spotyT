@@ -7,7 +7,13 @@
 ## Track name
 
 ## Popularity
-Integer
+The popularity of the track.
+
+Value between 0 and 100
+100 is the most popular.
+
+Calculated by algorithm and is based mostly on the total number of plays the track has had and how recent those plays are.
+Songs that are being played a lot now will have a higher popularity than songs that were played a lot in the past.
 
 ## Acousticness
 Value between 0.0 to 1.0
@@ -71,3 +77,7 @@ Value between 0.0 to 1.0
 Describing the musical positiveness conveyed by a track.
 Tracks with high valence sound more positive
 Tracks with low valence sound more negative.
+
+## Region
+
+[ec, fr, ar, fi, no, it, lt, ph, tw, nz, ee, tr, us, sv, cr, de, cl]
