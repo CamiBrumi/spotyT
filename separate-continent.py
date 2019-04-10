@@ -5,6 +5,21 @@ fields = []
 rows = []
 countries = []
 
+sa = ['ec', 'ar', 'cl', 'br','pe','bo','uy','co','py']
+saRows = []
+na = ['us','sv','cr','hn','gt','ca','mx','pa','do','is']
+naRows = []
+eu = ['fr','fi','no','it','lt','ee','de','ch','hu','be',
+      'dk','pl','at','se','pt','es','cz','ie','nl','sk',
+      'lu','gb','lv','gr']
+euRows = []
+ai = ['ph','tw','tr','jp','my','sg','id','hk']
+aiRows = []
+au = ['au','nz']
+auRows = []
+gl = 'global'
+glRows = []
+
 with open(filename, 'r', encoding='utf-8') as fd:
     csvreader = csv.reader(fd)
 
@@ -12,66 +27,29 @@ with open(filename, 'r', encoding='utf-8') as fd:
 
     for row in csvreader:
         rows.append(row)
-        if row[fields.index("Region")] not in countries:
-            countries.append(row[fields.index("Region")])
+        # if row[fields.index("Region")] not in countries:
+        #     countries.append(row[fields.index("Region")])
 
 print(", ".join(field for field in fields))
 print(countries)
 print(len(countries))
 
-# sa = ['ec', 'ar', 'cl', '']
+regionCol = fields.index("Region")
+for row in rows:
+    if row[regionCol] in na:
+        row[regionCol] = 'NA'
+    elif row[regionCol] in sa:
+        row[regionCol] = 'SA'
+    elif row[regionCol] in eu:
+        row[regionCol] = 'EU'
+    elif row[regionCol] in ai:
+        row[regionCol] = 'AI'
+    elif row[regionCol] in au:
+        row[regionCol] = 'AU'
+    else:
+        row[regionCol] = 'GL'
 
-# ['ec', Ecuador
-#  'fr',France
-#  'ar', Argentina
-#  'fi', Finland
-#  'no', Norway
-#  'it', Italy
-#  'lt', Lithuania
-#  'ph', Philippines
-#  'tw', Taiwan
-#  'nz', New Zealand
-#  'ee', Estonia
-#  'tr', Turkey
-#  'us', United States
-#  'sv', El Salvador
-#  'cr', Costa Rica
-#  'de', Germany
-#  'cl', Chile
-#  'jp', Japan
-#  'br', Brazil
-#  'hn', Honduras
-#  'gt', Guatemala
-#  'ch', Switzerland
-#  'hu', Hungary
-#  'ca', Canada
-#  'pe', Peru
-#  'be', Belgium
-#  'my', Malaysia
-#  'dk', Denmark
-#  'bo', Bolivia
-#  'pl', Poland
-#  'at', Austria
-#  'pt', Portugal
-#  'se', Sweden
-#  'mx', Mexico
-#  'pa', Panama
-#  'uy', Uruguay
-#  'is', Iceland
-#  'es', Spain
-#  'cz', Czech
-#  'ie', Ireland
-#  'nl', Netherlands
-#  'sk', Slovakia
-#  'co', Colombia
-#  'sg', Singapore
-#  'id', Indonesia
-#  'do', Dominican Republic
-#  'lu', Luxembourg
-#  'gb', UK
-#  'global', Global
-#  'py', Paraguay
-#  'au', Australia
-#  'lv', Latvia
-#  'gr', Greece
-#  'hk'  Hong Kong]
+with open('data/engineered-data.csv', 'w', encoding='utf-8') as fd:
+    csvwriter = csv.writer(fd)
+    csvwriter.writerow(fields)
+    csvwriter.writerows(rows)
