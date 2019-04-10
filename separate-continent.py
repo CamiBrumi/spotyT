@@ -27,6 +27,8 @@ with open(filename, 'r', encoding='utf-8') as fd:
 
     for row in csvreader:
         rows.append(row)
+        if row[fields.index("Region")] == 'us':
+            rows.append(row)
         # if row[fields.index("Region")] not in countries:
         #     countries.append(row[fields.index("Region")])
 
@@ -35,7 +37,10 @@ print(countries)
 print(len(countries))
 
 regionCol = fields.index("Region")
+americaFlag = False
 for row in rows:
+    if row[regionCol] == 'us' and not americaFlag:
+        americaFlag = True
     if row[regionCol] in na:
         row[regionCol] = 'NA'
     elif row[regionCol] in sa:
