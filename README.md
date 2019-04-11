@@ -1,4 +1,17 @@
 # Spotify Project
+## Some kind of schedule
+april 10 more feature engineering and merge data
+questions
+1 time signature only the numerator?
+2 Keys: minor major problem
+
+april 11: maybe a bit more on feature engineering and merging data, correlations and choosing the predictors- backwards/forward/best subset/pca
+april 12- 16 we can do the K-NN, LDA, QDA, logistic regression
+april 17 - 19 cross validation/ play with the models, compute accuracy, maybe 
+april 21-23 INTERFACE CONTINENTS AND RANKINGS
+
+*Notes* : at some point we will have to do the separation of the training set from the testing set
+
 ## Datasets
 https://drive.google.com/open?id=1V_GGcrdUc8kCu0qPx09mHgMu2D--VmiU
 ## How to get started
