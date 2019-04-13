@@ -18,8 +18,8 @@ import matplotlib.pyplot as plt
 # associated with performance in the previous year. Let's take a quick look:
 
 
-hitters_df = pd.read_csv('Hitters.csv')
-hitters_df.head()
+features = pd.read_csv('data/SpotifyFeatures.csv')
+features.head()
 
 
 # First of all, we note that the `Salary` variable is missing for some of the
@@ -28,7 +28,7 @@ hitters_df.head()
 # The `sum()` function can then be used to count all of the missing elements:
 
 
-print("Number of null values:", hitters_df["Salary"].isnull().sum())
+#print("Number of null values:", features["Salary"].isnull().sum())
 
 
 # We see that `Salary` is missing for 59 players. The `dropna()` function
@@ -36,28 +36,27 @@ print("Number of null values:", hitters_df["Salary"].isnull().sum())
 
 
 # Print the dimensions of the original Hitters data (322 rows x 20 columns)
-print("Dimensions of original data:", hitters_df.shape)
+print("Dimensions of original data:", features.shape)
 
 # Drop any rows the contain missing values, along with the player names
-hitters_df_clean = hitters_df.dropna().drop('Player', axis=1)
+#features_clean = features.dropna().drop('Player', axis=1)
 
 # Print the dimensions of the modified Hitters data (263 rows x 20 columns)
-print("Dimensions of modified data:", hitters_df_clean.shape)
+#print("Dimensions of modified data:", features_clean.shape)
 
 # One last check: should return 0
-print("Number of null values:", hitters_df_clean["Salary"].isnull().sum())
+#print("Number of null values:", features_clean["Salary"].isnull().sum())
 
 
+dummies = pd.get_dummies(features[['genre', 'artist_name', 'track_name', 'track_id', 'key', 'mode', 'time_signature']])
 
-dummies = pd.get_dummies(hitters_df_clean[['League', 'Division', 'NewLeague']])
+y = features.popularity
 
-y = hitters_df_clean.Salary
-
-# Drop the column with the independent variable (Salary), and columns for which we created dummy variables
-X_ = hitters_df_clean.drop(['Salary', 'League', 'Division', 'NewLeague'], axis=1).astype('float64')
+# Drop the column with the independent variable (popularity), and columns for which we created dummy variables
+X_ = features.drop(['popularity', 'genre', 'artist_name', 'track_name', 'track_id', 'key', 'mode', 'tempo', 'time_signature'], axis=1).astype('float64')
 
 # Define the feature set X.
-X = pd.concat([X_, dummies[['League_N', 'Division_W', 'NewLeague_N']]], axis=1)
+X = pd.concat([X_, dummies[['genreN', 'artist_nameN', 'track_nameN', 'track_idN', 'keyN', 'modeN', 'tempoN', 'time_signatureN']]], axis=1)
 
 
 # We can perform best subset selection by identifying the best model that contains a given number of predictors, where **best** is quantified using RSS. We'll define a helper function to outputs the best set of variables for
