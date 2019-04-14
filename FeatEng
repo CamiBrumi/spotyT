@@ -1,0 +1,103 @@
+# Feature Engineering
+
+## Genre
+
+## Artist Name
+
+## Track name
+
+## Popularity
+The popularity of the track.
+
+Value between 0 and 100
+100 is the most popular.
+
+Calculated by algorithm and is based mostly on the total number of plays the track has had and how recent those plays are.
+Songs that are being played a lot now will have a higher popularity than songs that were played a lot in the past.
+
+## Acousticness
+Value between 0.0 to 1.0
+
+1.0 represents high confidence the track is acoustic.
+
+## Danceability
+Value between 0.0 and 1.0
+
+A value of 0.0 is least danceable and 1.0 is most danceable.
+
+## Duration
+In milliseconds
+
+## Energy
+Value between 0.0 to 1.0
+
+1.0 is high energy
+
+## Instrumentalness
+Value between 0.0 to 1.0
+
+The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content.
+Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0. 
+
+## Key
+Unit circle divided into 12
+
+C Major = A Minor = (1,0)
+C# Major = A# Minor = (sqrt(3)/2, 1/2)
+D Major = B Minor = (1/2, sqrt(3)/2)
+D# Major = C Minor = (0,1)
+E Major = C# Minor = (-1/2, sqrt(3)/2)
+F Major = D Minor = (-sqrt(3)/2), 1/2)
+F# Major = D# Minor = (-1,0)
+G Major = E Minor = (-sqrt(3)/2), -1/2)
+G# Major = F Minor = (-1/2, -sqrt(3)/2)
+A Major = F# Minor = (0,-1)
+A# Major = G Minor = (1/2, -sqrt(3)/2)
+B Major = G# Minor = (sqrt(3)/2), -1/2)
+
+## Liveness
+Value between 0.0 and 1.0
+
+A value above 0.8 provides strong likelihood that the track is live.
+
+## Loudness
+in decibels (dB)
+Values typicaly range between -60 and 0 db
+
+## Mode
+Major = 1
+Minor = -1
+
+## Speechiness
+Value between 0.0 and 1.0
+
+The more exclusively speech-like the recording, the closer to 1.0 the attribute value.
+Values above 0.66 describe tracks that are probably made entirely of spoken words. 
+Values between 0.33 and 0.66 describe tracks that may contain both music and speech.
+Values below 0.33 most likely represent music and other non-speech-like tracks.
+
+## Tempo
+in beats per minute (BPM)
+
+## Time signature
+
+Categorical Data
+[0/4, 1/4, 3/4, 4/4, 5/4]
+
+## Valence
+Value between 0.0 to 1.0
+
+Describing the musical positiveness conveyed by a track.
+Tracks with high valence sound more positive
+Tracks with low valence sound more negative.
+
+## Region
+North America (United States)
+South America (Ecuador, Argentina, Philippines, El Salvador, Costa Rica, Chile)
+Europe (France, Finland, Norway, Italy, Lithuania, Estonia, Turkey, Germany)
+Asia (Taiwan)
+New Zealand
+
+[ec, fr, ar, fi, no, it, lt, ph, tw, nz, ee, tr, us, sv, cr, de, cl]
+[Ecuador, France, Argentina, Finland, Norway, Italy, Lithuania, Philippines, Taiwan,
+New Zealand, Estonia, Turkey, United States, El Salvador, Costa Rica, Germany, Chile]
