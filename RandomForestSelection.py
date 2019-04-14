@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.ensemble import RandomForestRegressor
 
+#implementing random forest subset selection for regression
+
 #reading csv file into dataframe
 df = pd.read_csv('engineered-track-data.csv')
 df = df.copy()
@@ -31,6 +33,7 @@ rf.fit(x, y)
 #reassigning column names to normalized matrix
 df_scaled = pd.DataFrame(scaled_data, columns=df.columns)
 
-# Print the name and variance decrease (importance measure) of each feature
+#printing the name and variance decrease (importance measure) of each feature
 print (sorted(zip(map(lambda x: round(x, 4), rf.feature_importances_), df_scaled.columns.values[1:]),
              reverse=True))
+
