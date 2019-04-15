@@ -1,28 +1,47 @@
+rm(list=ls())
+
 library(ISLR)
 library(knitr)
 library(printr)
 library(leaps)
-data("Hitters")
-attach(Hitters)
 
-Hitters
-?str
 
-str(Hitters)
-# First of all, we note that the Salary variable is missing for some of the players.
-sum(is.na(Hitters$Salary))
-nrow(Hitters)
+
+#nrow(mydata)
+#ncol(mydata)
+#pairs(mydata)
+sum(is.na(mydata$popularity))
+mydata
+str(mydata)
 #So before we proceed we will remove them. The na.omit() function removes all of the rows that have
 # missing values in any variable.
 
-Hitters=na.omit(Hitters)
-sum(is.na(Hitters))
-
+# Hitters=na.omit(mydata)
+# sum(is.na(mydata))
+# ridg regression
 # The regsubsets() function (part of the leaps library) performs best sub- set selection by identifying the 
 # best model that contains a given number of predictors, where best is quantified using RSS. The summary() 
 # command outputs the best set of variables for each model size.
 # library(leaps)
-regfit.full = regsubsets(Salary ~ ., data = Hitters, nvmax = 19) # change to the number of vars of out dataset
+
+setwd("~/Documents/spotyT")
+mydata = read.csv("data/engineered-track-data.csv")  # read csv file 
+a<-c(4:14, 40:43)
+mydata <- mydata[,a]
+
+#I normalize the data for each column (mean = 0, standard deviation = 1)
+for (j in 1:ncol(mydata))
+{
+  # cat("mean before: ", mean(mydata[,j]))
+  # cat("sd before: ", sd(mydata[,j]))
+  mydata[,j] = scale(mydata[,j])
+  # cat("mean after: ", mean(mydata[,j]))
+  # cat("sd after: ", sd(mydata[,j]))
+  # print("-------------------------")
+}
+
+?regsubsets
+regfit.full = regsubsets(danceability ~ ., data = mydata, nvmax = 15, method ="forward") # change to the number of vars of out dataset
 reg.summary = summary(regfit.full)
 summary(regfit.full)
 # The summary() function also returns R2, RSS, adjusted R2, Cp, and BIC. We can examine these to try to 
@@ -61,7 +80,7 @@ rsq %>%
   add_axis("x", title = "Number of variables")
 
 # Plotting RSS, adjusted R2, Cp, and BIC for all of the models will help us decide which model to select. Lets have all the plots at once to better compare:
-  
+
 par(mfrow=c(2,2))
 plot(reg.summary$rss ,xlab="Number of Variables ",ylab="RSS",type="l")
 plot(reg.summary$adjr2 ,xlab="Number of Variables ", ylab="Adjusted RSq",type="l")
@@ -88,4 +107,3 @@ plot(regfit.full,scale="rsq")
 # We can use the coef() function to see the coefficient estimates associated with this model.
 
 coef(regfit.full ,6)
-
