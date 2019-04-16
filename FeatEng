@@ -80,8 +80,8 @@ Values below 0.33 most likely represent music and other non-speech-like tracks.
 in beats per minute (BPM)
 
 ## Time signature
-0.0, 0.25, 0.75, 1.0, 1.25
 
+Categorical Data
 [0/4, 1/4, 3/4, 4/4, 5/4]
 
 ## Valence
