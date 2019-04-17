@@ -1,12 +1,9 @@
 #Ridge Regression
 
-#get_ipython().magic('matplotlib inline')
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.preprocessing import scale
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Ridge, RidgeCV
 from sklearn.metrics import mean_squared_error
@@ -34,13 +31,6 @@ for a in alphas:
 
 np.shape(coefs)
 
-ax = plt.gca()
-ax.plot(alphas, coefs)
-ax.set_xscale('log')
-plt.axis('tight')
-plt.xlabel('alpha')
-plt.ylabel('weights')
-
 # Split data into training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
 
@@ -58,3 +48,8 @@ ridge4.fit(X, y)
 pd.Series(ridge4.coef_, index=X.columns)
 print("Coefficients: ")
 print(pd.Series(ridge4.coef_, index=X.columns))  # Print coefficients
+
+ce = pd.Series(ridge4.coef_, index=X.columns)
+plt.plot(ce, 'go')
+plt.axhline(y=0, color='r', linestyle='-')
+plt.show()
