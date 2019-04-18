@@ -4,20 +4,25 @@ from sklearn.ensemble import RandomForestRegressor
 from dataUtilities import splitData
 import numpy as np
 import matplotlib.pyplot as plt
+import sklearn.model_selection as ms
 from matplotlib.colors import ListedColormap
 from sklearn import neighbors, datasets
 from sklearn import metrics
 
-k = 2
+
 
 df = pd.read_csv('data/normalizeddata_train.csv')
-train, test = splitData(df, 0.8);
+#train, test = splitData(df, 0.8);
 #df.shape
 #train.shape
 #test.shape
-X_train = train.drop(['Region', 'URL', 'Position'], inplace=False, axis=1)
+#X_train = train.drop(['Region', 'URL', 'Position'], inplace=False, axis=1)
 # print(X.dtypes)
-y_train = train[['Position']]
+#y_train = train[['Position']]
+
+X = df.drop(['Region', 'URL', 'Position'], inplace=False, axis=1)
+y = df[['Position']]
+
 from sklearn.neighbors import KNeighborsClassifier
 # neigh = KNeighborsClassifier(n_neighbors=k)
 # neigh.fit(X_train, y_train)
@@ -25,9 +30,9 @@ from sklearn.neighbors import KNeighborsClassifier
 # print(neigh.predict_proba([X_train.iloc[50]]))
 #
 #
-X_test = test.drop(['Region', 'URL', 'Position'], inplace=False, axis=1)
+#X_test = test.drop(['Region', 'URL', 'Position'], inplace=False, axis=1)
 # # print(X.dtypes)
-y_test = test[['Position']]
+#y_test = test[['Position']]
 # print(neigh.score(X_test, y_test, None)) # Returns the mean accuracy on the given test data and labels.
 
 k_range = range(1, 100)
@@ -36,19 +41,24 @@ scores_list = []
 
 for k in k_range:
     neigh = KNeighborsClassifier(n_neighbors=k)
-    neigh.fit(X_train, y_train)
-    y_pred = neigh.predict(X_test)
+    scores[k] = ms.cross_val_score(neigh, X, y, cv=4)
+    #neigh.fit(X_train, y_train)
+    #y_pred = neigh.predict(X_test)
     #print(neigh.predict_proba([X_train.iloc[50]]))
-    scores[k] = metrics.accuracy_score(y_test,y_pred)
+    #scores[k] = metrics.accuracy_score(y_test,y_pred)
     print(k)
     print(scores[k])
+    meanScore = np.mean(scores[k])
+    print(meanScore)
     print('-----')
-    scores_list.append(metrics.accuracy_score(y_test,y_pred))
+    scores_list.append(meanScore)
 
 plt.plot(k_range, scores_list)
 #import scikitplot as skplt
 #skplt.metrics.plot_precision_recall_curve(k_range, scores_list)
 plt.show()
+
+bestK = scores_list.index(max(scores_list)) + 1;
 
 # # create the plot
 # h = .02  # step size in the mesh
