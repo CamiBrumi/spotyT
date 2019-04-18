@@ -39,6 +39,17 @@ finaldf.loc[(finaldf['Position'] <= 100) & (finaldf['Position'] > 50), 'Position
 finaldf.loc[(finaldf['Position'] <= 150) & (finaldf['Position'] > 100), 'Position'] = 150
 finaldf.loc[(finaldf['Position'] >  150), 'Position'] = 200
 
+emptydf = finaldf[finaldf.isnull().any(axis=1)].copy()
+emptydf.drop(labels=['acousticness','danceability','duration_ms','energy',
+                'instrumentalness','liveness','loudness','speechiness',
+                'tempo','valence','Opera','A Capella','Alternative',
+                'Blues','Dance','Pop','Electronic','R&B','Children’s Music',
+                'Folk','Anime','Rap','Classical','Reggae','Hip-Hop',
+                'Comedy','Country','Reggaeton','Ska','Indie','Rock','Soul',
+                'Soundtrack','Jazz','World','Movie','time_sig_x','time_sig_y','Position','Region','key_x','key_y'], inplace=True, axis=1)
+emptydf.replace('https://open.spotify.com/track/', '', regex=True, inplace=True)
+print(emptydf.dtypes)
+emptydf.to_csv(path_or_buf='data/empty.csv')
 finaldf.dropna(inplace=True)
 
 country = ''
