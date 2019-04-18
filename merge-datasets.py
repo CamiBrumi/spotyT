@@ -1,7 +1,10 @@
 import pandas as pd
 from sklearn import preprocessing
 from sklearn_pandas import DataFrameMapper, cross_val_score
+from sklearn.model_selection import train_test_split
 import numpy as np
+
+COUNTRIES = False
 
 chartdf = pd.read_csv('data/engineered-data.csv')
 trackdf = pd.read_csv('data/engineered-track-data.csv')
@@ -36,16 +39,51 @@ finaldf.loc[(finaldf['Position'] <= 100) & (finaldf['Position'] > 50), 'Position
 finaldf.loc[(finaldf['Position'] <= 150) & (finaldf['Position'] > 100), 'Position'] = 150
 finaldf.loc[(finaldf['Position'] >  150), 'Position'] = 200
 
-finaldf.to_csv(path_or_buf='data/finaldata.csv',index=False)
+finaldf.dropna(inplace=True)
+
+country = ''
+if COUNTRIES:
+       finaldf = pd.get_dummies(finaldf, columns=['Region'])
+       country = '_countries'
+
+columns = finaldf.columns.values
+
+finaldf_train, finaldf_test = train_test_split(finaldf, test_size=2000)
+
+finaldf_train.to_csv(path_or_buf='data/finaldata_train'+country+'.csv',index=False)
+finaldf_test.to_csv(path_or_buf='data/finaldata_test'+country+'.csv',index=False)
 
 # finaldf.set_index('URL')
+if COUNTRIES:
+       mapper = DataFrameMapper([
+              (['Position','URL'], None),
+              (['acousticness','danceability','duration_ms','energy',
+                'instrumentalness','liveness','loudness','speechiness',
+                'tempo','valence','Opera','A Capella','Alternative',
+                'Blues','Dance','Pop','Electronic','R&B','Children’s Music',
+                'Folk','Anime','Rap','Classical','Reggae','Hip-Hop',
+                'Comedy','Country','Reggaeton','Ska','Indie','Rock','Soul',
+                'Soundtrack','Jazz','World','Movie','time_sig_x','time_sig_y',
+                'key_x','key_y'], preprocessing.MinMaxScaler()),
+              (['Region_be','Region_ca',
+                'Region_ch','Region_cl','Region_ec','Region_ee',
+                'Region_es','Region_fi','Region_gb','Region_gr',
+                'Region_hk','Region_hn','Region_ie','Region_is',
+                'Region_it','Region_jp','Region_nz','Region_pa',
+                'Region_pe','Region_pl','Region_py','Region_se',
+                'Region_sg','Region_sk','Region_sv','Region_tw',
+                'Region_uy'], None)
+       ], input_df=True)
+else:
+       mapper = DataFrameMapper([
+              ('Position', None),
+              ('URL', None),
+              ('Region', None),
+       ], input_df=True, default=preprocessing.MinMaxScaler())
+normalizeddf_train = pd.DataFrame(mapper.fit_transform(finaldf_train))
+normalizeddf_test = pd.DataFrame(mapper.fit_transform(finaldf_test))
+normalizeddf_train.columns = columns
+normalizeddf_test.columns = columns
 
-mapper = DataFrameMapper([
-       ('Position', None),
-       ('URL', None),
-       ('Region', None),
-], input_df=True, default=preprocessing.MinMaxScaler())
-normalizeddf = pd.DataFrame(mapper.fit_transform(finaldf))
-
-
-normalizeddf.to_csv(path_or_buf='data/normalizeddata.csv',index=False)
+normalizeddf_train.to_csv(path_or_buf='data/normalizeddata_train'+country+'.csv',index=False)
+normalizeddf_test.to_csv(path_or_buf='data/normalizeddata_test'+country+'.csv',index=False)
