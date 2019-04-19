@@ -5,13 +5,13 @@ from sklearn.ensemble import RandomForestRegressor
 #implementing random forest subset selection for regression
 
 #reading csv file into dataframe
-df = pd.read_csv('engineered-track-data.csv')
+df = pd.read_csv('normalizeddata.csv')
 df = df.copy()
 df = df.dropna()
 
-#implementing lasso selection
+#implementing random forest selection
 #dropping fields that will not count as predictors
-df.drop(['artist_name', 'track_name', 'track_id'], inplace=True, axis=1)
+df.drop(['0', '1', '2'], inplace=True, axis=1)
 
 #normalizing dataframe values
 #returns a numpy array (headers not included)
