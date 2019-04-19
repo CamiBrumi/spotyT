@@ -1,8 +1,14 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
+import plotly
+import plotly.plotly as py
+#plotly.tools.set_credentials_file(username='petrakumi', api_key='••••••••••')
+
+import plotly.graph_objs as go
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold, cross_val_score
 import pandas as pd
+
 
 """ takes in name of csv file and creates dataframe of file
 @:param file_name: str 
@@ -89,21 +95,69 @@ def find_highest_accuracy (n_trees_min, n_trees_max, n_folds_min, n_folds_max):
 
     #printing stuff
     print("trees and folds")
-    print(final_arr[0:2:1])
+    print(final_arr[:,[0,1]])
     print("mean and stdev of scores")
-    print(final_arr[3:4:1])
+    print(final_arr[:,[2,3]])
 
     #getting info
     print("max avg accuracy is ", final_arr.max(axis=0)[2])
     print("max accuracy is for tree no ", final_arr.max(axis=0)[0])
     print("max accuracy is for fold no ", final_arr.max(axis=0)[1])
 
-    #TODO:  make 3D scatterplot of all data to show accuracy trends
+    # 3d scatterplot of data, using plotly
+    trace1 = go.Scatter3d(x=final_arr[:,0], y=final_arr[:,1], z=final_arr[:,2],
+                          mode='markers', marker=dict(size=8,color=final_arr[:,2], colorscale='Viridis', opacity=0.9))
+
+    data = [trace1]
+    layout = go.Layout(margin=dict(l=0, r=0, b=0, t=0),
+                       xaxis=go.layout.XAxis(
+                           title=go.layout.xaxis.Title(
+                               text='Number of Trees',
+                               font=dict(
+                                   family='Courier New, monospace',
+                                   size=18
+                               )
+                           )
+                       ),
+                       yaxis=go.layout.YAxis(
+                           title=go.layout.yaxis.Title(
+                               text='Number of Folds',
+                               font=dict(
+                                   family='Courier New, monospace',
+                                   size=18,
+                               )
+                           )
+                       )
+                       # zaxis=go.layout.ZAxis(
+                       #     title=go.layout.yaxis.Title(
+                       #         text='Average Accuracy',
+                       #         font=dict(
+                       #             family='Courier New, monospace',
+                       #             size=18,
+                       #         )
+                       #     )
+                       # )
+                    )
+
+    fig = go.Figure(data=data, layout=layout)
+    plotly.offline.plot(fig, filename='test_scatterplot.html')
+
+    #below, plotting using matplotlib
+    # plt.style.use("ggplot")
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.scatter(final_arr[:,0], final_arr[:,1], final_arr[:,2],zdir = 'avg accuracy', c='red')
+    # ax.set_xlabel('number of trees')
+    # ax.set_ylabel('number of folds')
+    # ax.set_zlabel('average accuracy')
+    #
+    # plt.show()
+
     return final_arr
 
 
 ### RUNNING CODE ###
 
-find_highest_accuracy(5,7,4,8)
+find_highest_accuracy(15,25,4,6)
 
 
