@@ -4,7 +4,7 @@ from sklearn_pandas import DataFrameMapper, cross_val_score
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-COUNTRIES = False
+COUNTRIES = True
 
 chartdf = pd.read_csv('data/engineered-data.csv')
 trackdf = pd.read_csv('data/engineered-track-data.csv')

@@ -14,7 +14,7 @@ from dataUtilities import *
 returns dataframe with elements of csv file, predictor set, and label set
 """
 def prepare_df(file_name):
-    df = getStartData(False)
+    df = getStartData('../data', False)
     df_y = df['Position']
     df_x = df.drop(['Position','URL','Region'], axis=1)
     return df, df_x, df_y
@@ -30,7 +30,7 @@ while the rest can be used as a training set
 @:return kf
 returns array of k-fold cross validation sets
 """
-def make_kfold_cvset(k, df_x, df_y):
+def make_kfold_cvset(k, df_x):
     kf = KFold(n_splits=k, shuffle=True)  # defines the k fold split, with shuffling
     return kf.split(df_x)
 
@@ -51,12 +51,12 @@ then cross validates it using k-fold cv with a certain number of folds
 @:param df_y : dataFrame
 returns array of scores, with no of entries = no of folds
 """
-def svm_accuracy(C, kernel, degree, shrinking, n_folds, df_x, df_y):
+def svm_accuracy(C, kernel, degree, n_folds, df_x, df_y):
     # creating instance of random forest classifier
     if degree == 1:
-        clf = svm.SVC(C=C, kernel=kernel, shrinking=shrinking)
+        clf = svm.SVC(C=C, kernel=kernel, gamma='auto')
     else:
-        clf = svm.SVC(C=C, kernel=kernel, degree=degree, shrinking=shrinking)
+        clf = svm.SVC(C=C, kernel=kernel, gamma='auto', degree=degree)
 
     # calculating accuracy of model
     # cv value is the number of folds for cross validation
@@ -82,7 +82,7 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
     all_data_list = []
 
     # getting dataframe from filename
-    df, df_x, df_y = prepare_df('data/normalizeddata_test.csv')
+    df, df_x, df_y = prepare_df('../data/normalizeddata_train.csv')
 
     # iterating through parameters to get scores
     for n_folds in range (n_folds_min, n_folds_max+1):
@@ -93,22 +93,22 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
                 2: 'poly',
                 3: 'sigmoid'
             }
-            for s in range(2):
-                sSwitch = {
-                    0: False,
-                    1: True
-                }
-                for c in range(c_min, c_max+1):
-                    print("checking for kernel ", kSwitch.get(k), " and n_folds ", n_folds)
-                    if k == 2:
-                        for d in range(deg_min, deg_max+1):
-                            scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), d, sSwitch.get(s), n_folds, df_x, df_y)
-                            all_data_list.append(
-                                [c, kSwitch.get(k), d, sSwitch.get(s), n_folds, scores.mean(), scores.std() * 2])
-                    else:
-                        scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), 1, sSwitch.get(s), n_folds, df_x, df_y)
+            for c in range(c_min, c_max+1):
+                if k == 2:
+                    for d in range(deg_min, deg_max+1):
+                        print("checking for kernel", kSwitch.get(k), "and n_folds ", n_folds,
+                              "and penalty", c, "and degree", d)
+                        scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), d, n_folds, df_x, df_y)
                         all_data_list.append(
-                            [c, kSwitch.get(k), d, sSwitch.get(s), n_folds, scores.mean(), scores.std() * 2])
+                            [c, kSwitch.get(k), d, n_folds, scores.mean(), scores.std() * 2])
+                else:
+                    # i=0
+                    print("checking for kernel", kSwitch.get(k), "and n_folds ", n_folds,
+                          "and penalty", c)
+                    scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), 1, n_folds, df_x, df_y)
+                    print('done')
+                    all_data_list.append(
+                        [c, kSwitch.get(k), 1, n_folds, scores.mean(), scores.std() * 2])
 
     len_arr = len(all_data_list) #length of list that has all info
     # turn list into numpy array and reshape so each row shows one  step
@@ -116,14 +116,14 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
 
     # printing stuff
     print("parameters")
-    print(final_arr[0:2:1])
+    print(final_arr[:,[0,1,2]])
     print("mean and stdev of scores")
-    print(final_arr[3:4:1])
+    print(final_arr[:,[3,4]])
 
     # getting info
-    print("max avg accuracy is ", final_arr.max(axis=0)[2])
-    print("max accuracy is for tree no ", final_arr.max(axis=0)[0])
-    print("max accuracy is for fold no ", final_arr.max(axis=0)[1])
+    print("max avg accuracy is ", final_arr.max(axis=0)[3])
+    # print("max accuracy is for tree no ", final_arr.max(axis=0)[0])
+    # print("max accuracy is for fold no ", final_arr.max(axis=0)[1])
 
     #TODO:  make 3D scatterplot of all data to show accuracy trends
     return final_arr
@@ -131,6 +131,7 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
 
 ### RUNNING CODE ###
 
-find_highest_accuracy(-5,5, 3, 6,4,8)
+find_highest_accuracy(-5, 1, 3, 3, 6, 6)
+# HIGHEST ACCURACY WAS WITH RBF, C=10^1
 
 
