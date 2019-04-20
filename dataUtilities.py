@@ -7,6 +7,7 @@
 ##########
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import os
 
 # getStartData()
 # Gets a bootstrapped sample of the data left over from the safe split
@@ -17,11 +18,11 @@ from sklearn.model_selection import train_test_split
 #                               False if you want region as a response
 #                               defaults to True
 # RETURN pandas.DataFrame   :   Dataframe of ~12,000 bootstrapped points from the dataset
-def getStartData(countries=True):
+def getStartData(path='data',countries=True):
     if countries:
-        df = pd.read_csv('data/normalizeddata_train_countries.csv')
+        df = pd.read_csv(os.path.join(path,'normalizeddata_train_countries.csv'))
     else:
-        df = pd.read_csv('data/normalizeddata_train.csv')
+        df = pd.read_csv(os.path.join(path,'normalizeddata_train.csv'))
 
     df = bootstrap(df)
     return df
@@ -53,3 +54,9 @@ def bootstrap(df, size=1.0):
         return df.sample(n=size, replace=True)
     else:
         return df.sample(frac=size, replace=True)
+
+
+def setDataset(df, rank):
+    df.loc[df['Position'] <= rank, 'Position'] = rank
+    df.loc[df['Position'] > rank, 'Position'] = 200
+    return df
