@@ -8,6 +8,9 @@ from sklearn.decomposition import PCA
 # PARAM nr_comp: number of principal components
 # RETURN principalDf: the dataframe with the principal components. Each column is a different PC.
 #
+from dataUtilities import normalize
+
+
 def pca(nr_comp = 2):
     df = pd.read_csv('data/normalizeddata_train.csv')
     df = df.drop(['Region', 'URL', 'Position'], inplace=False, axis=1)
@@ -20,11 +23,11 @@ def pca(nr_comp = 2):
 
     principalDf = pd.DataFrame(data=principalComponents
                                , columns=titles)
-    return principalDf
+    return normalize(principalDf)
 
-# res = pca(2)
-# print(res["PC 1"].mean())
-# print(res["PC 1"].var())
-# 
-# print(res["PC 2"].mean())
-# print(res["PC 2"].var())
+res = pca(2)
+print(res["PC 1"].mean())
+print(res["PC 1"].std())
+
+print(res["PC 2"].mean())
+print(res["PC 2"].std())
