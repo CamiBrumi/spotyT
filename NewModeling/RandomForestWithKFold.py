@@ -1,7 +1,5 @@
 from sklearn import metrics
-from sklearn.metrics import average_precision_score, precision_recall_curve
 from sklearn.utils.multiclass import unique_labels
-from sklearn.utils.fixes import signature
 
 
 import dataUtilities
@@ -15,6 +13,36 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+""" takes in name of csv file and creates dataframe of file
+@:param file_name: str 
+@:return df
+@:return df_x
+@:return df_y
+returns dataframe with elements of csv file, predictor set, and label set
+"""
+def prepare_df_w_countries(file_name, rank):
+    df = pd.read_csv(file_name)
+    dataUtilities.setDataset(df, rank)
+    df_train, df_test = dataUtilities.splitData(df,0.8)
+
+    df_train_y = df_train['Position']
+    df_train_x = df_train.drop(['Position','URL','Region'], axis=1)
+
+    df_test_y = df_test['Position']
+    df_test_x = df_test.drop(['Position', 'URL','Region'], axis=1)
+    return df, df_train_x, df_train_y, df_test_x, df_test_y
+
+def prepare_df_wo_countries(file_name, rank):
+    df = pd.read_csv(file_name)
+    dataUtilities.setDataset(df, rank)
+    df_train, df_test = dataUtilities.splitData(df,0.8)
+
+    df_train_y = df_train['Position']
+    df_train_x = df_train.drop(['Position','URL'], axis=1)
+
+    df_test_y = df_test['Position']
+    df_test_x = df_test.drop(['Position', 'URL'], axis=1)
+    return df, df_train_x, df_train_y, df_test_x, df_test_y
 
 
 """divides the data into k parts,
@@ -47,7 +75,7 @@ returns array of scores, with no of entries = no of folds
 """
 def random_forest_accuracy(n_trees, n_folds, n_features, df_train_x, df_train_y):
     #creating instance of random forest classifier
-    clf = RandomForestClassifier(n_estimators=n_trees, max_features=n_features)
+    clf = RandomForestClassifier(n_estimators=n_trees, max_depth=n_features)
 
     #calculating accuracy of model
     #cv value is the number of folds for cross validation
@@ -74,12 +102,12 @@ def find_highest_accuracy (n_trees_min, n_trees_max, n_features_min, n_features_
     all_data_list = []
 
     # getting dataframe from filename
-    df, df_test_x, df_test_y, df_train_x, df_train_y = prepare_df('normalizeddata_train_countries.csv',10)
+    df, df_test_x, df_test_y, df_train_x, df_train_y = prepare_df_wo_countries('normalizeddata_train_countries.csv',10)
 
     # iterating through number of trees and folds to get scores
-    for n_trees in range (n_trees_min,n_trees_max+1):
+    for n_trees in range (n_trees_min,n_trees_max+1,100):
         for n_folds in range (n_folds_min,n_folds_max+1):
-            for n_features in range (n_features_min, n_features_max+1):
+            for n_features in range (n_features_min, n_features_max+1,10):
                 print("checking for n_trees ", n_trees, " and n_folds ", n_folds, " and n_features", n_features)
                 scores = random_forest_accuracy(n_trees, n_folds, n_features, df_test_x, df_test_y)
 
@@ -113,7 +141,7 @@ def find_highest_accuracy (n_trees_min, n_trees_max, n_features_min, n_features_
     make_3d_plot(final_arr)
 
     #checking model with test set
-    clf = RandomForestClassifier(n_estimators=int(ideal_trees), max_features=int(ideal_featureno))
+    clf = RandomForestClassifier(n_estimators=int(ideal_trees), max_depth=int(ideal_featureno))
     clf.fit(df_train_x,df_train_y)
     predictions = clf.predict(df_test_x)
     print("Test Accuracy for ideal parameters:" , metrics.accuracy_score(predictions,df_test_y))
@@ -249,7 +277,7 @@ def plot_confusion_matrix(df, y_true, y_pred,
 
 ### RUNNING CODE ###
 
-find_highest_accuracy(80, 90, 6, 6, 6, 6)
+#find_highest_accuracy(100, 600, 10, 100, 6, 6)
 #find_highest_accuracy(80, 90, 9, 9, 6, 6)
 
 
