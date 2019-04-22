@@ -1,5 +1,8 @@
 from sklearn import metrics
+from sklearn.metrics import average_precision_score, precision_recall_curve
 from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.fixes import signature
+
 
 import dataUtilities
 import plotly
@@ -124,6 +127,10 @@ def find_highest_accuracy (n_trees_min, n_trees_max, n_features_min, n_features_
     # Plot normalized confusion matrix
     plot_confusion_matrix(df, df_test_y, predictions, normalize=True, title='Normalized confusion matrix')
 
+    # get precision of model
+
+
+
     #get_confusion_matrix(df_test_y, predictions)
     return final_arr
 
@@ -240,10 +247,9 @@ def plot_confusion_matrix(df, y_true, y_pred,
 
 
 
-
 ### RUNNING CODE ###
 
-find_highest_accuracy(83, 87, 6, 6, 6, 6)
+find_highest_accuracy(80, 90, 6, 6, 6, 6)
 #find_highest_accuracy(80, 90, 9, 9, 6, 6)
 
 
