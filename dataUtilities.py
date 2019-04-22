@@ -65,6 +65,7 @@ def setDataset(df, rank):
     df.loc[df['Position'] > rank, 'Position'] = 200
     return df
 
+
 """ takes in name of csv file and creates dataframe of file
 @:param file_name: str 
 @:return df
@@ -97,13 +98,21 @@ def prepare_df(position):
     df_test_x = df_test.drop(['Position', 'URL'], axis=1)
     return df_x, df_y, df_test_x, df_test_y
 
+
 def normalize(df):
-    preprocessing.MinMaxScaler().fit_transform(df)
+    preprocessing.StandardScaler().fit_transform(df)
     return df
 
 # df is test dataframe, models is a list of models
-# def layeredBinaryClassification(df, models):
-#     pred = pd.DataFrame()
-#     for m in models:
-#         p = m.predict(df)
-
+# returns predictions
+def layeredBinaryClassification(df, models):
+    pred = None
+    for m in models:
+        if pred is None:
+            pred = m.predict(df)
+        else:
+            p = m.predict(df)
+            for i in range(len(pred)):
+                if pred[i] == 200:
+                    pred[i] = p[i]
+    return pred

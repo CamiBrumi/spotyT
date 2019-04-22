@@ -70,7 +70,7 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
     final_arr = []
 
     # getting dataframe from filename
-    df_x, df_y, df_test_x, df_test_y = prepare_df('../data/normalizeddata_train.csv')
+    df_x, df_y, df_test_x, df_test_y = prepare_df(10)
 
 
     # # iterating through parameters to get scores
@@ -114,6 +114,7 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
     model = svm.SVC(C=10, kernel='rbf', gamma='auto')
     model.fit(df_x, df_y)
     pred = model.predict(df_test_x)
+    print("Pred\n", pred)
     print("Metrics:", metrics.accuracy_score(df_test_y, pred))
     print("Metrics:", metrics.confusion_matrix(df_test_y, pred))
     # print("max avg accuracy is ", final_arr.max(axis=0)[3])
