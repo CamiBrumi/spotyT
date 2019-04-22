@@ -79,18 +79,19 @@ def prepare_df(position):
     df = setDataset(df, position)
     df, df_test = splitData(df, 0.8)
 
-    max_size = df['Position'].value_counts().iloc[0]
-    max_index = df['Position'].value_counts().index[0]
-    df_temp = df[(df['Position'] == position)]
-    df_200 = df[(df['Position'] == 200)]
+    if position is not None:
+        max_size = df['Position'].value_counts().iloc[0]
+        max_index = df['Position'].value_counts().index[0]
+        df_temp = df[(df['Position'] == position)]
+        df_200 = df[(df['Position'] == 200)]
 
-    if (max_index == 200):
-        df_temp = resample(df_temp, replace=True, n_samples=max_size)
-    else:
-        df_200 = resample(df_200, replace=True, n_samples=max_size)
+        if (max_index == 200):
+            df_temp = resample(df_temp, replace=True, n_samples=max_size)
+        else:
+            df_200 = resample(df_200, replace=True, n_samples=max_size)
 
-    df = pd.concat([df_temp, df_200])
-    print(df['Position'].value_counts())
+        df = pd.concat([df_temp, df_200])
+    # print(df['Position'].value_counts())
 
     df_y = df['Position']
     df_x = df.drop(['Position', 'URL'], axis=1)
@@ -102,6 +103,7 @@ def prepare_df(position):
 def normalize(df):
     preprocessing.StandardScaler().fit_transform(df)
     return df
+
 
 # df is test dataframe, models is a list of models
 # returns predictions
