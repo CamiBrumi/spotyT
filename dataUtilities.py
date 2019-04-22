@@ -98,9 +98,7 @@ def prepare_df(position):
     return df_x, df_y, df_test_x, df_test_y
 
 def normalize(df):
-    mapper = DataFrameMapper(
-        [('Position', None)], input_df=True, default=preprocessing.MinMaxScaler())
-    df = pd.DataFrame(mapper.fit_transform(df))
+    preprocessing.MinMaxScaler().fit_transform(df)
     return df
 
 # df is test dataframe, models is a list of models
