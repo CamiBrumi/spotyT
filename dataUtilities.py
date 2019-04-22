@@ -7,7 +7,10 @@
 ##########
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
 import os
+from sklearn.utils import resample
+import math
 
 # getStartData()
 # Gets a bootstrapped sample of the data left over from the safe split
@@ -60,3 +63,46 @@ def setDataset(df, rank):
     df.loc[df['Position'] <= rank, 'Position'] = rank
     df.loc[df['Position'] > rank, 'Position'] = 200
     return df
+
+""" takes in name of csv file and creates dataframe of file
+@:param file_name: str 
+@:return df
+@:return df_x
+@:return df_y
+returns dataframe with elements of csv file, predictor set, and label set
+"""
+def prepare_df(position):
+    df = getStartData('../data', True)
+
+    df = setDataset(df, position)
+    df, df_test = splitData(df, 0.8)
+
+    max_size = df['Position'].value_counts().iloc[0]
+    max_index = df['Position'].value_counts().index[0]
+    df_temp = df[(df['Position'] == position)]
+    df_200 = df[(df['Position'] == 200)]
+
+    if (max_index == 200):
+        df_temp = resample(df_temp, replace=True, n_samples=max_size)
+    else:
+        df_200 = resample(df_200, replace=True, n_samples=max_size)
+
+    df = pd.concat([df_temp, df_200])
+    print(df['Position'].value_counts())
+
+    df_y = df['Position']
+    df_x = df.drop(['Position', 'URL'], axis=1)
+    df_test_y = df_test['Position']
+    df_test_x = df_test.drop(['Position', 'URL'], axis=1)
+    return df_x, df_y, df_test_x, df_test_y
+
+def normalize(df):
+    preprocessing.MinMaxScaler().fit_transform(df)
+    return df
+
+# df is test dataframe, models is a list of models
+# def layeredBinaryClassification(df, models):
+#     pred = pd.DataFrame()
+#     for m in models:
+#         p = m.predict(df)
+

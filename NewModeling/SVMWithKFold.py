@@ -2,27 +2,10 @@
 # from mpl_toolkits import mplot3d
 from sklearn import svm, metrics
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.utils import resample
 import pandas as pd
 import math
 from dataUtilities import *
-
-""" takes in name of csv file and creates dataframe of file
-@:param file_name: str 
-@:return df
-@:return df_x
-@:return df_y
-returns dataframe with elements of csv file, predictor set, and label set
-"""
-def prepare_df(file_name):
-    df = getStartData('../data', True)
-    df = setDataset(df, 10)
-    df, df_test = splitData(df, 0.8)
-    df_y = df['Position']
-    df_x = df.drop(['Position', 'URL'], axis=1)
-    df_test_y = df_test['Position']
-    df_test_x = df_test.drop(['Position', 'URL'], axis=1)
-    return df_x, df_y, df_test_x, df_test_y
-
 
 """
 divides the data into k parts,
@@ -88,6 +71,7 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
 
     # getting dataframe from filename
     df_x, df_y, df_test_x, df_test_y = prepare_df('../data/normalizeddata_train.csv')
+
 
     # # iterating through parameters to get scores
     # for n_folds in range (n_folds_min, n_folds_max+1):
