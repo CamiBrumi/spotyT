@@ -12,11 +12,37 @@ df = pd.read_csv(r"C:\Users\Yanni Peri-Okonny\Documents\R\Project\normalizeddata
 #df.info()
 #df.columns
 
-y = df['0']
-#print(y)
-X_ = df.drop('0', axis=1).astype('float64')
-X = pd.concat([X_], axis=1)
-#X.info()
+y = df['Position']
+X_ = df.drop('Position', axis=1).astype('float64')
+cols = X_.columns.tolist()
+
+i = PolynomialFeatures(degree=2, include_bias=False, interaction_only=True)
+arr = i.fit_transform(X_)
+# print(arr.shape)
+
+c = []
+for n in cols:
+    p = n+n
+    c.append(p)
+# print(c)
+
+list3 = []
+for l in cols:
+    for b in cols:
+        if l+b and b+l in list3:
+            continue
+        else:
+            list3.append(l+b)
+# print(list3)
+
+for z in list3:
+    if z in c:
+        continue
+    else:
+        cols.append(z)
+# print(len(cols))
+
+X = pd.DataFrame(data=arr, columns=cols)
 
 alphas = 10 ** np.linspace(10, -2, 100) * 0.5
 #print("Alphas: ",alphas)
@@ -50,6 +76,13 @@ print("Coefficients: ")
 print(pd.Series(ridge4.coef_, index=X.columns))  # Print coefficients
 
 ce = pd.Series(ridge4.coef_, index=X.columns)
+
+print("Largest: ")
+print(ce.nlargest(n=50, keep="all"))
+print("Smallest: ")
+print(ce.nsmallest(n=50, keep="all"))
+
 plt.plot(ce, 'go')
 plt.axhline(y=0, color='r', linestyle='-')
+plt.xticks([])
 plt.show()
