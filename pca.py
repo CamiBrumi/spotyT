@@ -21,3 +21,10 @@ def pca(nr_comp = 2):
     principalDf = pd.DataFrame(data=principalComponents
                                , columns=titles)
     return principalDf
+
+# res = pca(2)
+# print(res["PC 1"].mean())
+# print(res["PC 1"].var())
+# 
+# print(res["PC 2"].mean())
+# print(res["PC 2"].var())
