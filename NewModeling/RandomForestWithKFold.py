@@ -147,16 +147,7 @@ def find_highest_accuracy (n_trees_min, n_trees_max, n_features_min, n_features_
     plot_confusion_matrix(df, df_test_y, predictions, normalize=True, title='Normalized confusion matrix')
 
     # get precision of model
-    #--------------------------------------------STUCK HERE-----------------------------------------
-    average_precision = average_precision_score(df_test_y.index.values, predictions)
-    print("average precision is: ", average_precision)
 
-    # plotting ROC curves:
-    # x axis shows recall (sensitivity of model) = TP/(TP+FN)
-    # y axis shows precision (positive predictive value) = TP/(TP+FP)
-    # ideally, a PRC would be in the upper right corner
-    # The closer the curve to the corner, the more accurately model predicts positives
-    plot_precision_recall_curve(df_test_y, predictions, average_precision)
 
 
     #get_confusion_matrix(df_test_y, predictions)
@@ -272,25 +263,6 @@ def plot_confusion_matrix(df, y_true, y_pred,
     plt.show()
 
     return ax
-
-
-def plot_precision_recall_curve(y_test, y_score, average_precision):
-    precision, recall, _ = precision_recall_curve(y_test, y_score)
-
-    # In matplotlib < 1.5, plt.fill_between does not have a 'step' argument
-    step_kwargs = ({'step': 'post'}
-                   if 'step' in signature(plt.fill_between).parameters
-                   else {})
-    plt.step(recall, precision, color='b', alpha=0.2,
-             where='post')
-    plt.fill_between(recall, precision, alpha=0.2, color='b', **step_kwargs)
-
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.ylim([0.0, 1.05])
-    plt.xlim([0.0, 1.0])
-    plt.title('2-class Precision-Recall curve: AP={0:0.2f}'.format(
-        average_precision))
 
 
 
