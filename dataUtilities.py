@@ -7,6 +7,7 @@
 ##########
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn_pandas import DataFrameMapper
 from sklearn import preprocessing
 import os
 from sklearn.utils import resample
@@ -97,7 +98,9 @@ def prepare_df(position):
     return df_x, df_y, df_test_x, df_test_y
 
 def normalize(df):
-    preprocessing.MinMaxScaler().fit_transform(df)
+    mapper = DataFrameMapper(
+        [('Position', None)], input_df=True, default=preprocessing.MinMaxScaler())
+    df = pd.DataFrame(mapper.fit_transform(df))
     return df
 
 # df is test dataframe, models is a list of models
