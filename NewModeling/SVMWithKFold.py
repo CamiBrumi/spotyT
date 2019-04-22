@@ -1,24 +1,11 @@
 # import matplotlib.pyplot as plt
 # from mpl_toolkits import mplot3d
-from sklearn import svm
+from sklearn import svm, metrics
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.utils import resample
 import pandas as pd
 import math
 from dataUtilities import *
-
-""" takes in name of csv file and creates dataframe of file
-@:param file_name: str 
-@:return df
-@:return df_x
-@:return df_y
-returns dataframe with elements of csv file, predictor set, and label set
-"""
-def prepare_df(file_name):
-    df = getStartData('../data', False)
-    df_y = df['Position']
-    df_x = df.drop(['Position','URL','Region'], axis=1)
-    return df, df_x, df_y
-
 
 """
 divides the data into k parts,
@@ -80,48 +67,56 @@ arr[tree_no, fold_no, score.mean(), score.std()*2]
 def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_max):
 
     all_data_list = []
+    final_arr = []
 
     # getting dataframe from filename
-    df, df_x, df_y = prepare_df('../data/normalizeddata_train.csv')
+    df_x, df_y, df_test_x, df_test_y = prepare_df('../data/normalizeddata_train.csv')
 
-    # iterating through parameters to get scores
-    for n_folds in range (n_folds_min, n_folds_max+1):
-        for k in range(4):
-            kSwitch = {
-                0: 'linear',
-                1: 'rbf',
-                2: 'poly',
-                3: 'sigmoid'
-            }
-            for c in range(c_min, c_max+1):
-                if k == 2:
-                    for d in range(deg_min, deg_max+1):
-                        print("checking for kernel", kSwitch.get(k), "and n_folds ", n_folds,
-                              "and penalty", c, "and degree", d)
-                        scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), d, n_folds, df_x, df_y)
-                        all_data_list.append(
-                            [c, kSwitch.get(k), d, n_folds, scores.mean(), scores.std() * 2])
-                else:
-                    # i=0
-                    print("checking for kernel", kSwitch.get(k), "and n_folds ", n_folds,
-                          "and penalty", c)
-                    scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), 1, n_folds, df_x, df_y)
-                    print('done')
-                    all_data_list.append(
-                        [c, kSwitch.get(k), 1, n_folds, scores.mean(), scores.std() * 2])
 
-    len_arr = len(all_data_list) #length of list that has all info
-    # turn list into numpy array and reshape so each row shows one  step
-    final_arr = pd.np.asarray(all_data_list).reshape(len_arr,6)
-
-    # printing stuff
-    print("parameters")
-    print(final_arr[:,[0,1,2]])
-    print("mean and stdev of scores")
-    print(final_arr[:,[3,4]])
+    # # iterating through parameters to get scores
+    # for n_folds in range (n_folds_min, n_folds_max+1):
+    #     for k in range(4):
+    #         kSwitch = {
+    #             0: 'linear',
+    #             1: 'rbf',
+    #             2: 'poly',
+    #             3: 'sigmoid'
+    #         }
+    #         for c in range(c_min, c_max+1):
+    #             if k == 2:
+    #                 for d in range(deg_min, deg_max+1):
+    #                     print("checking for kernel", kSwitch.get(k), "and n_folds ", n_folds,
+    #                           "and penalty", c, "and degree", d)
+    #                     scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), d, n_folds, df_x, df_y)
+    #                     all_data_list.append(
+    #                         [c, kSwitch.get(k), d, n_folds, scores.mean(), scores.std() * 2])
+    #             else:
+    #                 # i=0
+    #                 print("checking for kernel", kSwitch.get(k), "and n_folds ", n_folds,
+    #                       "and penalty", c)
+    #                 scores = svm_accuracy(math.pow(10,c), kSwitch.get(k), 1, n_folds, df_x, df_y)
+    #                 print('done')
+    #                 all_data_list.append(
+    #                     [c, kSwitch.get(k), 1, n_folds, scores.mean(), scores.std() * 2])
+    #
+    # len_arr = len(all_data_list) #length of list that has all info
+    # # turn list into numpy array and reshape so each row shows one  step
+    # final_arr = pd.np.asarray(all_data_list).reshape(len_arr,6)
+    #
+    # # printing stuff
+    # # print("parameters")
+    # # print(final_arr[:,[0,1,2]])
+    # # print("mean and stdev of scores")
+    # # print(final_arr[:,[3,4]])
+    # print(final_arr)
 
     # getting info
-    print("max avg accuracy is ", final_arr.max(axis=0)[3])
+    model = svm.SVC(C=10, kernel='rbf', gamma='auto')
+    model.fit(df_x, df_y)
+    pred = model.predict(df_test_x)
+    print("Metrics:", metrics.accuracy_score(df_test_y, pred))
+    print("Metrics:", metrics.confusion_matrix(df_test_y, pred))
+    # print("max avg accuracy is ", final_arr.max(axis=0)[3])
     # print("max accuracy is for tree no ", final_arr.max(axis=0)[0])
     # print("max accuracy is for fold no ", final_arr.max(axis=0)[1])
 
@@ -133,5 +128,9 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
 
 find_highest_accuracy(-5, 1, 3, 3, 6, 6)
 # HIGHEST ACCURACY WAS WITH RBF, C=10^1
+# Top 10: 0.9133266533066132,  [[0     173] [0    1823]]
+# Top 50: 0.7449899799599199,  [[121   460] [49   1366]]
+# Top 100: 0.657314629258517,  [[935   236] [448   377]]
+# Top 150: 0.8191382765531062, [[1634    0] [361     1]]
 
 

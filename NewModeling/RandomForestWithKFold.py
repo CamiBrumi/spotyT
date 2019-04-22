@@ -15,25 +15,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-""" takes in name of csv file and creates dataframe of file
-@:param file_name: str 
-@:return df
-@:return df_x
-@:return df_y
-returns dataframe with elements of csv file, predictor set, and label set
-"""
-def prepare_df(file_name, rank):
-    df = pd.read_csv(file_name)
-    dataUtilities.setDataset(df, 10)
-    df_train, df_test = dataUtilities.splitData(df,0.8)
-
-    df_train_y = df_train['Position']
-    df_train_x = df_train.drop(['Position','URL'], axis=1)
-
-    df_test_y = df_test['Position']
-    df_test_x = df_test.drop(['Position', 'URL'], axis=1)
-    return df, df_train_x, df_train_y, df_test_x, df_test_y
-
 
 
 """divides the data into k parts,
