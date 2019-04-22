@@ -55,7 +55,7 @@ def bootstrap(df, size=1.0):
     else:
         return df.sample(frac=size, replace=True)
 
-
+# Takes an int for rank
 def setDataset(df, rank):
     df.loc[df['Position'] <= rank, 'Position'] = rank
     df.loc[df['Position'] > rank, 'Position'] = 200
