@@ -1,4 +1,4 @@
-from joblib import dump
+import joblib
 from sklearn import metrics
 from sklearn.utils.multiclass import unique_labels
 import numpy as np
@@ -280,36 +280,50 @@ def plot_confusion_matrix(df, y_true, y_pred,
     return ax
 
 
-def fitModels(n_trees, max_depth, mc=True, ovr=False):
+def fitModels(n_trees=100, max_depth=30, load=False, mc=True, ovr=False, countries=True):
     # getting dataframe from filename
-    x, y, x_test, y_test = dataUtilities.prepare_df(None)
+    x, y, x_test, y_test = dataUtilities.prepare_df(None, countries)
     df_x = pd.concat([x, x_test])
     df_y = pd.concat([y, y_test])
     df = df_x.join(df_y)
 
     if ovr:
-        x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
-        x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = dataUtilities.prepare_df(10)
-        x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = dataUtilities.prepare_df(50)
-        x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = dataUtilities.prepare_df(100)
-        x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = dataUtilities.prepare_df(150)
+        if not load:
+            x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
+            x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = dataUtilities.prepare_df(10)
+            x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = dataUtilities.prepare_df(50)
+            x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = dataUtilities.prepare_df(100)
+            x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = dataUtilities.prepare_df(150)
 
-        bModels = []
-        for i in range(4):
-            bModels.append(RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth))
-            bModels[i].fit(x_arr[i], y_arr[i])
-            print("Fitted", i + 1, "models")
-        ovrPred = dataUtilities.layeredBinaryClassification(x_test, bModels)
+            bModels = []
+            for i in range(4):
+                bModels.append(RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth))
+                bModels[i].fit(x_arr[i], y_arr[i])
+                print("Fitted", i + 1, "models")
 
-        print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
-        print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
+            ovrPred = dataUtilities.layeredBinaryClassification(x_test, bModels)
+
+            print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
+            print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
 
     if mc:
-        model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth)
-        model.fit(x, y)
-        mcPred = model.predict(x_test)
-        dump(model, 'model.joblib')
+        if not load:
+            model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth)
+            model.fit(x, y)
+            joblib.dump(model, 'model.joblib')
 
+        else:
+            model = joblib.load('model.joblib')
+
+        featImps = {
+            'name' : x.columns,
+            'importance' : model.feature_importances_
+        }
+        featureImportance = pd.DataFrame(featImps).sort_values(by='importance')
+        # print("Feature Importances:\n", featureImportance)
+        featureImportance.to_csv('FeatureImportances.csv', index=False)
+
+        mcPred = model.predict(x_test)
         print("Multi-Class Accuracy:\n", metrics.accuracy_score(y_test, mcPred))
         print("Multi-Class Confusion Matrix:\n", metrics.confusion_matrix(y_test, mcPred))
         plot_confusion_matrix(df, y_test, mcPred)
@@ -321,9 +335,8 @@ def fitModels(n_trees, max_depth, mc=True, ovr=False):
 
 #find_highest_accuracy(100, 600, 10, 100, 6, 6)
 # find_highest_accuracy(80, 90, 9, 9, 6, 6)
-for n in [100]:
-    for m in [30]:
-        fitModels(n, m)
+fitModels(load=True)
+# fitModels()
 
 
 # Final parameters: n_estimators: 100, max_depth: 30

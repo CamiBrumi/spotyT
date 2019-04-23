@@ -31,6 +31,24 @@ def getStartData(path='data',countries=True):
     return df
 
 
+# getSafeData()
+# Gets a bootstrapped sample of the data left over from the safe split
+# Requires the normalizeddata_train.csv and normalizeddata_train_countries.csv files
+# to be in the data folder
+#
+# PARAM boolean countries   :   True if you want the region as a predictor,
+#                               False if you want region as a response
+#                               defaults to True
+# RETURN pandas.DataFrame   :   Dataframe of ~12,000 bootstrapped points from the dataset
+def getSafeData(path='data',countries=True):
+    if countries:
+        df = pd.read_csv(os.path.join(path,'normalizeddata_test_countries.csv'))
+    else:
+        df = pd.read_csv(os.path.join(path,'normalizeddata_test.csv'))
+
+    return df
+
+
 # splitData()
 # Randomly splits a dataframe in two
 #
@@ -72,8 +90,11 @@ def setDataset(df, rank):
 @:return df_y
 returns dataframe with elements of csv file, predictor set, and label set
 """
-def prepare_df(position):
-    df = getStartData('../data', True)
+def prepare_df(position, countries=True):
+    df = getStartData('../data', countries)
+
+    if not countries:
+        df.drop(['Region'], inplace=True, axis=1)
 
     df = setDataset(df, position)
     df, df_test = splitData(df, 0.8)
