@@ -96,7 +96,8 @@ def prepare_df(position, countries=True):
     if not countries:
         df.drop(['Region'], inplace=True, axis=1)
 
-    df = setDataset(df, position)
+    if position is not None:
+        df = setDataset(df, position)
     df, df_test = splitData(df, 0.8)
 
     if position is not None:

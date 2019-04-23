@@ -308,7 +308,7 @@ def fitModels(n_trees=100, max_depth=30, load=False, mc=True, ovr=False, countri
 
     if mc:
         if not load:
-            model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth)
+            model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth, class_weight='balanced')
             model.fit(x, y)
             joblib.dump(model, 'model.joblib')
 
@@ -335,7 +335,7 @@ def fitModels(n_trees=100, max_depth=30, load=False, mc=True, ovr=False, countri
 
 #find_highest_accuracy(100, 600, 10, 100, 6, 6)
 # find_highest_accuracy(80, 90, 9, 9, 6, 6)
-fitModels(load=True)
+# fitModels(load=True)
 # fitModels()
 
 
