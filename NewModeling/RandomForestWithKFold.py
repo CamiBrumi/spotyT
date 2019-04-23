@@ -1,5 +1,7 @@
+from joblib import dump
 from sklearn import metrics
 from sklearn.utils.multiclass import unique_labels
+import numpy as np
 
 
 import dataUtilities
@@ -238,7 +240,7 @@ def plot_confusion_matrix(df, y_true, y_pred,
     # Compute confusion matrix
     cm = metrics.confusion_matrix(y_true, y_pred)
     # Only use the labels that appear in the data
-    classes = df.index.values[unique_labels(y_true, y_pred)]
+    classes = np.vectorize(lambda label : int(label))(unique_labels(y_true, y_pred))
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, pd.np.newaxis]
         print("Normalized confusion matrix")
@@ -278,32 +280,40 @@ def plot_confusion_matrix(df, y_true, y_pred,
     return ax
 
 
-def fitModels(n_trees, max_depth):
+def fitModels(n_trees, max_depth, mc=True, ovr=False):
     # getting dataframe from filename
-    x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
-    x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = dataUtilities.prepare_df(10)
-    x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = dataUtilities.prepare_df(50)
-    x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = dataUtilities.prepare_df(100)
-    x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = dataUtilities.prepare_df(150)
     x, y, x_test, y_test = dataUtilities.prepare_df(None)
+    df_x = pd.concat([x, x_test])
+    df_y = pd.concat([y, y_test])
+    df = df_x.join(df_y)
 
-    # getting info
-    bModels = []
-    for i in range(4):
-        bModels.append(RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth))
-        bModels[i].fit(x_arr[i], y_arr[i])
-        print("Fitted", i + 1, "models")
-    ovrPred = dataUtilities.layeredBinaryClassification(x_test, bModels)
+    if ovr:
+        x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
+        x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = dataUtilities.prepare_df(10)
+        x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = dataUtilities.prepare_df(50)
+        x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = dataUtilities.prepare_df(100)
+        x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = dataUtilities.prepare_df(150)
 
-    model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth)
-    model.fit(x, y)
-    mcPred = model.predict(x_test)
+        bModels = []
+        for i in range(4):
+            bModels.append(RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth))
+            bModels[i].fit(x_arr[i], y_arr[i])
+            print("Fitted", i + 1, "models")
+        ovrPred = dataUtilities.layeredBinaryClassification(x_test, bModels)
 
-    print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
-    print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
+        print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
+        print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
 
-    print("Multi-Class Accuracy:\n", metrics.accuracy_score(y_test, mcPred))
-    print("Multi-Class Confusion Matrix:\n", metrics.confusion_matrix(y_test, mcPred))
+    if mc:
+        model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth)
+        model.fit(x, y)
+        mcPred = model.predict(x_test)
+        dump(model, 'model.joblib')
+
+        print("Multi-Class Accuracy:\n", metrics.accuracy_score(y_test, mcPred))
+        print("Multi-Class Confusion Matrix:\n", metrics.confusion_matrix(y_test, mcPred))
+        plot_confusion_matrix(df, y_test, mcPred)
+        plot_confusion_matrix(df, y_test, mcPred, normalize=True)
 
 
 
@@ -314,4 +324,17 @@ def fitModels(n_trees, max_depth):
 for n in [100]:
     for m in [30]:
         fitModels(n, m)
+
+
+# Final parameters: n_estimators: 100, max_depth: 30
+# Final strategy: single multi-class Random Forest
+# Final accuracy:
+# Multi-Class Accuracy:
+#  0.7369739478957916
+# Multi-Class Confusion Matrix:
+#  [[126  25  10   2   2]
+#  [  6 325  59  11   8]
+#  [  9  52 495  52  39]
+#  [  3  22  64 267  42]
+#  [  5  10  61  43 258]]
 
