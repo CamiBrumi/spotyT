@@ -102,7 +102,11 @@ def find_highest_accuracy (n_trees_min, n_trees_max, n_features_min, n_features_
     all_data_list = []
 
     # getting dataframe from filename
-    df, df_test_x, df_test_y, df_train_x, df_train_y = prepare_df_wo_countries('normalizeddata_train_countries.csv',10)
+    # df, df_test_x, df_test_y, df_train_x, df_train_y = prepare_df_wo_countries('normalizeddata_train_countries.csv',10)
+    df_train_x, df_train_y, df_test_x, df_test_y = dataUtilities.prepare_df(10)
+    df_x = pd.concat([df_train_x, df_test_x])
+    df_y = pd.concat([df_train_y, df_test_y])
+    df = df_x.join(df_y)
 
     # iterating through number of trees and folds to get scores
     for n_trees in range (n_trees_min,n_trees_max+1,100):
@@ -274,10 +278,40 @@ def plot_confusion_matrix(df, y_true, y_pred,
     return ax
 
 
+def fitModels(n_trees, max_depth):
+    # getting dataframe from filename
+    x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
+    x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = dataUtilities.prepare_df(10)
+    x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = dataUtilities.prepare_df(50)
+    x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = dataUtilities.prepare_df(100)
+    x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = dataUtilities.prepare_df(150)
+    x, y, x_test, y_test = dataUtilities.prepare_df(None)
+
+    # getting info
+    bModels = []
+    for i in range(4):
+        bModels.append(RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth))
+        bModels[i].fit(x_arr[i], y_arr[i])
+        print("Fitted", i + 1, "models")
+    ovrPred = dataUtilities.layeredBinaryClassification(x_test, bModels)
+
+    model = RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth)
+    model.fit(x, y)
+    mcPred = model.predict(x_test)
+
+    print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
+    print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
+
+    print("Multi-Class Accuracy:\n", metrics.accuracy_score(y_test, mcPred))
+    print("Multi-Class Confusion Matrix:\n", metrics.confusion_matrix(y_test, mcPred))
+
+
 
 ### RUNNING CODE ###
 
 #find_highest_accuracy(100, 600, 10, 100, 6, 6)
-#find_highest_accuracy(80, 90, 9, 9, 6, 6)
-
+# find_highest_accuracy(80, 90, 9, 9, 6, 6)
+for n in [100]:
+    for m in [30]:
+        fitModels(n, m)
 
