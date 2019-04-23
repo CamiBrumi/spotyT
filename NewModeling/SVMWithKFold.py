@@ -1,10 +1,13 @@
 # import matplotlib.pyplot as plt
 # from mpl_toolkits import mplot3d
+from joblib import dump
 from sklearn import svm, metrics
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.utils import resample
 import pandas as pd
 import math
+
+from NewModeling.RandomForestWithKFold import plot_confusion_matrix
 from dataUtilities import *
 
 """
@@ -133,30 +136,35 @@ def find_highest_accuracy (c_min, c_max, deg_min, deg_max, n_folds_min, n_folds_
 
 def fitModels():
     # getting dataframe from filename
-    x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
-    x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = prepare_df(10)
-    x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = prepare_df(50)
-    x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = prepare_df(100)
-    x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = prepare_df(150)
+    # x_arr, y_arr, x_test_arr, y_test_arr = [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]
+    # x_arr[0], y_arr[0], x_test_arr[0], y_test_arr[0] = prepare_df(10)
+    # x_arr[1], y_arr[1], x_test_arr[1], y_test_arr[1] = prepare_df(50)
+    # x_arr[2], y_arr[2], x_test_arr[2], y_test_arr[2] = prepare_df(100)
+    # x_arr[3], y_arr[3], x_test_arr[3], y_test_arr[3] = prepare_df(150)
     x, y, x_test, y_test = prepare_df(None)
 
     # getting info
-    bModels = []
-    for i in range(4):
-        bModels.append(svm.SVC(C=10000, kernel='rbf', gamma='auto'))
-        bModels[i].fit(x_arr[i], y_arr[i])
-        print("Fitted", i + 1, "models")
-    ovrPred = layeredBinaryClassification(x_test, bModels)
+    # bModels = []
+    # for i in range(4):
+    #     bModels.append(svm.SVC(C=10000, kernel='rbf', gamma='auto'))
+    #     bModels[i].fit(x_arr[i], y_arr[i])
+    #     print("Fitted", i + 1, "models")
+    # ovrPred = layeredBinaryClassification(x_test, bModels)
 
     model = svm.SVC(C=10000, kernel='rbf', gamma='auto')
     model.fit(x, y)
     mcPred = model.predict(x_test)
 
-    print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
-    print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
+    # print("One-VS-Rest Accuracy:\n", metrics.accuracy_score(y_test, ovrPred))
+    # print("One-VS-Rest Confusion Matrix:\n", metrics.confusion_matrix(y_test, ovrPred))
 
     print("Multi-Class Accuracy:\n", metrics.accuracy_score(y_test, mcPred))
     print("Multi-Class Confusion Matrix:\n", metrics.confusion_matrix(y_test, mcPred))
+
+    df_x = pd.concat([x, x_test])
+    df_y = pd.concat([y, y_test])
+    df = df_x.join(df_y)
+    plot_confusion_matrix(df, y_test, mcPred, normalize=True)
 
 ### RUNNING CODE ###
 

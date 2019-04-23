@@ -299,6 +299,7 @@ def fitModels(n_trees=100, max_depth=30, load=False, mc=True, ovr=False, countri
             for i in range(4):
                 bModels.append(RandomForestClassifier(n_estimators=n_trees, max_depth=max_depth))
                 bModels[i].fit(x_arr[i], y_arr[i])
+                joblib.dump(bModels[i], 'model'+str(i)+'.joblib')
                 print("Fitted", i + 1, "models")
 
             ovrPred = dataUtilities.layeredBinaryClassification(x_test, bModels)
@@ -336,18 +337,30 @@ def fitModels(n_trees=100, max_depth=30, load=False, mc=True, ovr=False, countri
 #find_highest_accuracy(100, 600, 10, 100, 6, 6)
 # find_highest_accuracy(80, 90, 9, 9, 6, 6)
 # fitModels(load=True)
-# fitModels()
+fitModels()
 
 
 # Final parameters: n_estimators: 100, max_depth: 30
 # Final strategy: single multi-class Random Forest
 # Final accuracy:
 # Multi-Class Accuracy:
-#  0.7369739478957916
+#  0.7219438877755511
 # Multi-Class Confusion Matrix:
-#  [[126  25  10   2   2]
-#  [  6 325  59  11   8]
-#  [  9  52 495  52  39]
-#  [  3  22  64 267  42]
-#  [  5  10  61  43 258]]
+#  [[125  32  16   3   2]
+#  [ 16 319  50  12  11]
+#  [  5  61 455  49  36]
+#  [  0  23  73 275  46]
+#  [  1   9  58  52 267]]
+# Confusion matrix, without normalization
+# [[125  32  16   3   2]
+#  [ 16 319  50  12  11]
+#  [  5  61 455  49  36]
+#  [  0  23  73 275  46]
+#  [  1   9  58  52 267]]
+# Normalized confusion matrix
+# [[0.70224719 0.17977528 0.08988764 0.01685393 0.01123596]
+#  [0.03921569 0.78186275 0.12254902 0.02941176 0.02696078]
+#  [0.00825083 0.10066007 0.75082508 0.08085809 0.05940594]
+#  [0.         0.05515588 0.17505995 0.65947242 0.11031175]
+#  [0.00258398 0.02325581 0.1498708  0.13436693 0.68992248]]
 
