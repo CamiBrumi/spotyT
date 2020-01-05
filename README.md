@@ -59,12 +59,5 @@ In conclusion, we tried to fit 6 different types of models to our data: Lasso, r
 Next, we removed entries with duplicate or missing data, followed by doing feature engineering to make the dataset useable for our purposes: we one-hot encoded the genre and column regions, represented tempo using the unit circle with 0/4 at the origin (representing songs that change tempo), and represented major and minor keys using two concentric circles with an initial radius of 0.5.  Finally, we used min-max scaling to normalize our data, and cross validated the radius of the concentric circle representing minor keys. We then proceeded to store some of the data in “the safe” to only use for testing of the final model. When all this was completed, we could move on to evaluating the accuracy of the selected models. We used k-fold cross-validation and bootstrapping to create testing and training datasets, then tried fine-tuning our models by cross validating on different hyperparameters. The most accurate model was the random forest with 100 trees, of 30 maximum features each, and 6 folds for k-fold cross-validation. After training our final model, we saved it and ran it on our safe data, for which we got a much lower accuracy than expected. Given than overfitting is not an issue in Random Forests, we suspect to have accidentally data snooped or not have examined model accuracy scores in more depth, leading to an overly biased model.  
 Throughout the process, the most time-consuming task was by far cross-validating our models. Before splitting datasets so each of them only contained two categories , top-x or not top-x, running cross-validation functions on large numbers was too computationally expensive, forcing us to resort to smaller hyperparameters. However, the process became easier and faster once we got used to it and finally generated all the necessary datasets. Out of all the models, the one which took most time and effort was random forest, as it had many modifiable parameters that required multiple rounds of cross-validation.
 
-
-
 ## Datasets
 https://drive.google.com/open?id=1V_GGcrdUc8kCu0qPx09mHgMu2D--VmiU
-## How to get started
-1. Look at the datasets -> take out the data we don't want
-2. Use R to see relationships, find correlations, choose the best predictors
-3. ???
-4. Profit
